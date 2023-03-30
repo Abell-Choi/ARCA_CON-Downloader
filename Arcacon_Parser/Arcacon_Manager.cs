@@ -4,7 +4,7 @@ namespace Arcacon_Parser {
         string _url = "arca.live/e/";
 
 
-        void _search_by_title(string title, bool is_rank=false) { }
+        void _search_by_title(string title, bool is_rank=false, int index = 1) { }
         void _search_by_nickname(string title) { }
         void _search_by_tag(string tag) { }
 

@@ -7,23 +7,21 @@ namespace Arcacon_Parser {
         string _url = "https://arca.live/e/";
 
 
-        /// <summary> 아카콘 메인 페이지 데이터 가져오기 </summary>
-        public List<Dictionary<string,dynamic>> _get_main_site(int index = 1) {
-            if (index < 1) { index = 1; }
-            //http://arca.live/e/?p=1
-            HtmlDocument _doc = this._get_web_data(this._url +"?p="+index.ToString());
-            var node = _doc.DocumentNode;
+        private List<Dictionary<string,dynamic>> get_post_lists(string url) {
+            HtmlDocument _doc = this._get_web_data(url);
+            HtmlNode _doc_node = _doc.DocumentNode;
 
-            List< Dictionary<string, dynamic> >_retunner_data = new();
+            List<Dictionary<string,dynamic>> _retunner_data = new();
 
+            var emote_node_root = _doc_node.SelectSingleNode(get_class_by_id("emoticon-list"));
+            HtmlNodeCollection emote_node_list = this._get_my_child_nodes(emote_node_root);
 
-            var emote_node_root = node.SelectSingleNode(get_class_by_id("emoticon-list"));
-            HtmlNodeCollection emote_node_lists = _get_my_child_nodes(emote_node_root);
+            if (emote_node_list == null) { throw new Exception("this node not exist child nodes"); }
 
-            foreach(HtmlNode i in emote_node_lists) {
+            foreach(HtmlNode i in emote_node_list) {
                 if (i.Name != "a") { continue; }
-                string content_name = i.SelectSingleNode(".//div" +get_class_by_id("title")).InnerHtml;
-                string upload_user = i.SelectSingleNode(".//div" +get_class_by_id("maker")).InnerHtml ;
+                string content_name = i.SelectSingleNode(".//div" + get_class_by_id("title")).InnerHtml;
+                string upload_user = i.SelectSingleNode(".//div" + get_class_by_id("maker")).InnerHtml;
                 string post_url = i.Attributes["href"].Value;
 
                 _retunner_data.Add(new Dictionary<string, dynamic>() {
@@ -32,25 +30,49 @@ namespace Arcacon_Parser {
                     {"post_url", post_url }
                 });
             }
-           
             return _retunner_data;
+        }
+
+        /// <summary> 아카콘 메인 페이지 데이터 가져오기 </summary>
+        public List<Dictionary<string,dynamic>> _get_main_site(int index = 1, bool is_rank = false) {
+            if (index < 1) { index = 1; }
+            //http://arca.live/e/?p=1
+            string url = this._url + "?p=" + index.ToString();
+            url += is_rank ? "sort=rank" : "";
+            return this.get_post_lists(url);
            
         }
 
-        void _search_by_title(string title, bool is_rank = false, int index = 1) {
+        public List<Dictionary<string, dynamic>> _search_by_title(string title, bool is_rank = false, int index = 1) {
             if (index < 1) { index = 1; }
-
+            string url = this._url;
+            url += "?p=" + index.ToString();
+            url += "&target=title";
+            url += "&keyword=" +title;
+            url += is_rank?"sort=rank" : "";
+            return this.get_post_lists(url);
         }
-        void _search_by_nickname(string nickname, bool is_rank = false, int index = 1) {
+
+        public List<Dictionary<string, dynamic>> _search_by_nickname(string nickname, bool is_rank = false, int index = 1) {
             if (index < 1) { index = 1; }
+            string url = this._url;
+            url += "?p=" + index.ToString();
+            url += "&target=nickname";
+            url += "&keyword=" + nickname;
+            url += is_rank ? "sort=rank" : "";
+            return this.get_post_lists(url);
         }
-        void _search_by_tag(string tag, bool is_rank = false, int index = 1) {
+        public List<Dictionary<string, dynamic>> _search_by_tag(string tag, bool is_rank = false, int index = 1) {
             if (index < 1) { index = 1; }
+            string url = this._url;
+            url += "?p=" + index.ToString();
+            url += "&target=tag";
+            url += "&keyword=" + tag;
+            url += is_rank ? "sort=rank" : "";
+            return this.get_post_lists(url);
         }
 
-        void _get_post_data(string post_url) {}
-        void _get_all_content_urls(string post_url) { }
-
+        void _get_post_data(string post_url) { }
         void _download_image(string url) { }
         void _download_video(string url) { }
         void _convert_gif(string url) { }

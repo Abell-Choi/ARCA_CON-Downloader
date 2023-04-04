@@ -1,12 +1,15 @@
 ﻿using System;
-using HtmlAgilityPack;
 using System.Net;
+using System.IO.Compression;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Arcacon_Parser {
     public class Arcacon_Manager {
         string _url = "https://arca.live/e/";
+        string _login_userid = string.Empty;
+        string _login_userpw = string.Empty;
         CookieContainer _cookie = new CookieContainer();
 
 
@@ -30,9 +33,17 @@ namespace Arcacon_Parser {
                 _retunner_data.Add(new Dictionary<string, dynamic>() {
                     {"content_name", content_name },
                     {"upload_user", upload_user },
-                    {"post_url", post_url }
+                    {"post_url", post_url.Split("?")[0] }
                 });
             }
+
+            // get last page num
+            var last_li = _doc_node.SelectNodes("//a" + get_class_by_id("page-link")).Last();
+            if (last_li == null) { return _retunner_data; }                                     // 없는 코드 처리 
+            _retunner_data.Add(new Dictionary<string, dynamic>() {
+                { "LAST_PAGE", int.Parse(last_li.Attributes["href"].Value.Split("p=")[1])}
+            });
+
             return _retunner_data;
         }
 
@@ -85,7 +96,7 @@ namespace Arcacon_Parser {
             this._get_main_site();
 
             Thread.Sleep(2000);
-            string url = this._url + post_code.ToString() +"?p=1";
+            string url = this._url + post_code.ToString();
             var _data = this._get_web_data(url);
             var node = _data.DocumentNode;
             var head_nodes = _data.DocumentNode.SelectSingleNode("//div" +this.get_class_by_id("article-head"));
@@ -94,13 +105,14 @@ namespace Arcacon_Parser {
 
             //content parsing 
             var articles = head_nodes.SelectSingleNode("./div" + get_class_by_id("info-row clearfix"));
-            var tags = body_nodes.SelectSingleNode("./div" + get_class_by_id("emoticon-tags"));
+            var tags     = body_nodes.SelectSingleNode("./div" + get_class_by_id("emoticon-tags"));
 
             string title_stirng = head_nodes.SelectSingleNode("./div" + get_class_by_id("title-row") +"/div" +get_class_by_id("title")).InnerText ;
-            string uploader = articles.SelectSingleNode("./div" +get_class_by_id("member-info")).InnerText;
-            int selling_count = int.Parse(articles.SelectSingleNode("./div" + get_class_by_id("article-info")).SelectSingleNode("./span" + get_class_by_id("body")).InnerText);
-            string update_date = articles.SelectSingleNode("./div" + get_class_by_id("article-info")).SelectSingleNode(".//time").InnerText;
-            List<string> _tags = new();
+            string uploader     = articles.SelectSingleNode("./div" +get_class_by_id("member-info")).InnerText;
+            int selling_count   = int.Parse(articles.SelectSingleNode("./div" + get_class_by_id("article-info")).SelectSingleNode("./span" + get_class_by_id("body")).InnerText);
+            string update_date  = articles.SelectSingleNode("./div" + get_class_by_id("article-info")).SelectSingleNode(".//time").InnerText;
+            List<string> _tags  = new();
+
             foreach(HtmlNode _node in tags.ChildNodes) {
                 if (_node.Name != "a") { continue; }
                 _tags.Add(_node.InnerText);
@@ -111,13 +123,53 @@ namespace Arcacon_Parser {
                 title_stirng, this._url +post_code.ToString(), uploader, selling_count, _tags, DateTime.Parse(update_date));
             _retunner_type.Add("INFO", _content_info);
 
-            Console.WriteLine(JsonConvert.SerializeObject((List<string>)_content_info.tags));
+            List<Arca_Content> _contents = new();
+            var _emote_lists = body_nodes.ChildNodes;
+            foreach(HtmlNode _node in _emote_lists) {
+                if (_node.ParentNode != body_nodes) { continue; }   // 친부모 아니면 제거
+                if (_node == _emote_lists.Last()) { continue; }     // 태그 제거
 
-            return null;
+
+                bool isVideo = false;
+                if (_node.Attributes["data-src"].Value.Split('.').Last() == "mp4") {
+                    isVideo = true;
+                }
+                var _content_obj = new Arca_Content(
+                    post_code, url, int.Parse(_node.Attributes["data-id"].Value),
+                    "https:" +_node.Attributes["data-src"], isVideo
+                ) ;
+
+                _contents.Add(_content_obj);
+            }
+
+            _retunner_type.Add("CONTENTS", _contents);
+            return _retunner_type;
         }
-        void _download_image(string url) { }
-        void _download_video(string url) { }
-        void _convert_gif(string url) { }
+
+        /// <summary> 단순 이미지 다운로드 </summary>
+        public bool _download_file(string url, string dir_name, string file_name) {
+            string path = "./" + dir_name;
+            DirectoryInfo _dir = new DirectoryInfo(path);
+            _reset_directory(path);
+
+            WebClient _wc = new WebClient();
+            try { _wc.DownloadFile(url, "./" +dir_name +"/" +file_name+url.Split('.').Last()); }
+            catch(Exception e) { return false; }
+            return true;
+        }
+
+
+        /// <summary> 디렉터리 초기화용 </summary>
+        private void _reset_directory(string dir_path) {
+            DirectoryInfo _dir = new DirectoryInfo(dir_path);
+            if (!_dir.Exists) { return; }
+            foreach (var file in _dir.GetFiles("*", SearchOption.AllDirectories)) {
+                file.Delete();
+            }
+
+            _dir.Delete(true);
+            _dir.Create();
+        }
 
 
         /// <summary> Html Document Parser </summary>
@@ -155,35 +207,5 @@ namespace Arcacon_Parser {
             return _nodes;
         }
     }
-    /// <summary>  </summary>
-    public class Arca_Content_Jar {
-        string content_name { get;  }                 // 아카콘 이름 (DB)
-        string post_url { get;  }            // 아카콘 주소 (DB)
-        string upload_user { get; }                  // 업로드 유저 (DB)
-        int sell_count { get; }
-        public List<string> tags { get; }
-        DateTime? upload_time { get; }                          // 업로드 일시 (DB)
-        DateTime update_time  { get; }                              // 업데이트 일시 (DB)
-
-        public Arca_Content_Jar(
-            string title, string post_url, string upload_user, int sell_count,List<string> tags, DateTime? upload_time
-        ) {
-            this.content_name = title;
-            this.post_url = post_url;
-            this.upload_user = upload_user;
-            this.sell_count = sell_count;
-            this.upload_time = upload_time;
-            this.update_time = DateTime.Now;
-        }
-    }
-
-    // FOR DB 
-    public class Arca_Content {
-        int data_id = -1;
-        string content_name = string.Empty;                 // 해당 아카콘의 글 이름
-        string content_url  = string.Empty;                 // 해당 아카콘의 주소
-        bool is_video       = false;                        // 이미지 인지
-        bool is_convert     = false;                        // mp4 -> gif화 된건지
-        string? convert_url = string.Empty;                 // gif 변환된 주소
-    }
+    
 }

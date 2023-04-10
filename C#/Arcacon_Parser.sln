@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1705.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcacon_Parser", "Arcacon_Parser\Arcacon_Parser.csproj", "{E37AD32E-B418-485B-A9EA-DAB137F253E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E37AD32E-B418-485B-A9EA-DAB137F253E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E37AD32E-B418-485B-A9EA-DAB137F253E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E37AD32E-B418-485B-A9EA-DAB137F253E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E37AD32E-B418-485B-A9EA-DAB137F253E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E21E4FC8-D64D-47A5-9267-0817034DBEA3}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$0.TextStylePolicy = $2
+		$2.inheritsSet = null
+		$2.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $3
+		$3.LabelPositioning = NoIndent
+		$3.NewLinesForBracesInTypes = False
+		$3.NewLinesForBracesInMethods = False
+		$3.NewLinesForBracesInProperties = False
+		$3.NewLinesForBracesInAccessors = False
+		$3.NewLinesForBracesInAnonymousMethods = False
+		$3.NewLinesForBracesInControlBlocks = False
+		$3.NewLinesForBracesInAnonymousTypes = False
+		$3.NewLinesForBracesInObjectCollectionArrayInitializers = False
+		$3.NewLinesForBracesInLambdaExpressionBody = False
+		$3.NewLineForElse = False
+		$3.NewLineForCatch = False
+		$3.NewLineForFinally = False
+		$3.SpacingAfterMethodDeclarationName = True
+		$3.SpaceWithinMethodDeclarationParenthesis = True
+		$3.SpaceBetweenEmptyMethodDeclarationParentheses = True
+		$3.SpaceAfterMethodCallName = True
+		$3.SpaceWithinMethodCallParentheses = True
+		$3.SpaceBetweenEmptyMethodCallParentheses = True
+		$3.SpaceWithinExpressionParentheses = True
+		$3.SpaceWithinCastParentheses = True
+		$3.SpaceWithinOtherParentheses = True
+		$3.SpaceAfterCast = True
+		$3.SpacesIgnoreAroundVariableDeclaration = True
+		$3.WrappingKeepStatementsOnSingleLine = False
+		$3.scope = text/x-csharp
+		$0.TextStylePolicy = $4
+		$4.FileWidth = 80
+		$4.TabsToSpaces = True
+		$4.scope = text/plain
+	EndGlobalSection
+EndGlobal

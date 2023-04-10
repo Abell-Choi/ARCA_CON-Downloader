@@ -1,0 +1,5 @@
+/Users/juchan_choi/Project/ARCA_CON-Downloader/Arcacon_Parser/obj/Debug/net7.0/Arcacon_Parser.csproj.AssemblyReference.cache
+/Users/juchan_choi/Project/ARCA_CON-Downloader/Arcacon_Parser/obj/Debug/net7.0/Arcacon_Parser.GeneratedMSBuildEditorConfig.editorconfig
+/Users/juchan_choi/Project/ARCA_CON-Downloader/Arcacon_Parser/obj/Debug/net7.0/Arcacon_Parser.AssemblyInfoInputs.cache
+/Users/juchan_choi/Project/ARCA_CON-Downloader/Arcacon_Parser/obj/Debug/net7.0/Arcacon_Parser.AssemblyInfo.cs
+/Users/juchan_choi/Project/ARCA_CON-Downloader/Arcacon_Parser/obj/Debug/net7.0/Arcacon_Parser.csproj.CoreCompileInputs.cache

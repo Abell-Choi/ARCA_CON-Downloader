@@ -1,4 +1,7 @@
-﻿using System;
+using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace Arcacon_Parser
 {
     /// <summary>  </summary>
@@ -11,15 +14,30 @@ namespace Arcacon_Parser
         DateTime? upload_time { get; }                          // 업로드 일시 (DB)
         DateTime update_time { get; }                              // 업데이트 일시 (DB)
 
-        public Arca_Content_Jar(
-            string title, string post_url, string upload_user, int sell_count, List<string> tags, DateTime? upload_time
+        public Arca_Content_Jar (
+            string title, string post_url, string upload_user, int sell_count, List<string> tags, DateTime? upload_time, DateTime? update_time=null
         ) {
             this.content_title = title;
             this.post_url = post_url;
             this.upload_user = upload_user;
             this.sell_count = sell_count;
             this.upload_time = upload_time;
-            this.update_time = DateTime.Now;
+            if (update_time == null ) { update_time = DateTime.Now; }
+            this.update_time = (DateTime) update_time;
+           }
+
+        public override string ToString()
+        {
+            Dictionary<string, dynamic> d = new ( );
+            d.Add ( "CONTENT_TITLE", content_title );
+            d.Add ( "POST_URL", post_url );
+            d.Add ( "UPLOAD_USER", upload_user );
+            d.Add ( "SELL_COUNT", sell_count );
+            d.Add ( "TAGS", tags );
+            d.Add ( "UPLOAD_TIME", upload_time );
+            d.Add ( "UPDATE_TIME", update_time );
+
+            return JsonConvert.SerializeObject(d);
         }
     }
 
@@ -44,9 +62,14 @@ namespace Arcacon_Parser
 
         public override string ToString()
         {
-            new Dictionary<string, dynamic>();
+            var d = new Dictionary<string, dynamic> ( );
+            d.Add ( "CONTENT_TITLE", content_title );
+            d.Add ( "CONTENT_POST_URL", content_post_url );
+            d.Add ( "CONTENT_ID", content_id );
+            d.Add ( "CONTENT_URL", content_url );
+            d.Add ( "IS_VIDEO", isVideo );
 
-                return "";
+            return JsonConvert.SerializeObject ( d );
         }
     }
 }

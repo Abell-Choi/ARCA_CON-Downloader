@@ -1,0 +1,28 @@
+﻿<Properties StartupConfiguration="{E37AD32E-B418-485B-A9EA-DAB137F253E4}|Default">
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="Arcacon_Parser/Structor.cs">
+    <Files>
+      <File FileName="Arcacon_Parser/MYSQL_MANAGER.cs" />
+      <File FileName="Arcacon_Parser/Program.cs" />
+      <File FileName="Arcacon_Parser/Arcacon_Manager.cs" />
+      <File FileName="Arcacon_Parser/Structor.cs" Line="35" Column="51" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Arcacon_Parser" expanded="True">
+            <Node name="Arcacon_Parser" expanded="True">
+              <Node name="Structor.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.Arcacon__Parser PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+</Properties>

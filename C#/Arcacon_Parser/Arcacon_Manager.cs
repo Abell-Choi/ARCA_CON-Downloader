@@ -120,7 +120,14 @@ namespace Arcacon_Parser {
 
             Dictionary<string, dynamic> _retunner_type = new();
             var _content_info = new Arca_Content_Jar(
-                title_stirng, this._url +post_code.ToString(), uploader, selling_count, _tags, DateTime.Parse(update_date));
+                post_code,
+                title_stirng,
+                this._url +post_code.ToString(),
+                uploader,
+                selling_count,
+                _tags,
+                DateTime.Parse(update_date)
+            );
             _retunner_type.Add("INFO", _content_info);
 
             List<Arca_Content> _contents = new();

@@ -1,47 +1,61 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
-SET time_zone = "+08:00";
+SET time_zone = "+00:00";
 
--- DB : `arcacon_parser`
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- 데이터베이스: `arcacon_parser`
+--
 
 -- --------------------------------------------------------
 
+--
 -- 테이블 구조 `ARCA_CONTENT_TB`
+--
 
 CREATE TABLE `ARCA_CONTENT_TB` (
-  `CONTENT_TITLE` varchar(32) NOT NULL,
-  `CONTENT_ID_PK` varchar(32) NOT NULL,
+  `TITLE_CODE` int(10) NOT NULL,
+  `CONTENT_ID_PK` int(10) NOT NULL,
   `CONTENT_URL` text NOT NULL,
   `IS_VIDEO` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
+--
 -- 테이블 구조 `CONTENT_TAGS_TB`
+--
 
 CREATE TABLE `CONTENT_TAGS_TB` (
   `TAG_CODE_PK` int(255) NOT NULL,
   `TAG_NAME` varchar(24) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
 -- --------------------------------------------------------
 
-
+--
 -- 테이블 구조 `CONTENT_TITLE_TB`
+--
 
 CREATE TABLE `CONTENT_TITLE_TB` (
-  `TITLE_PK` varchar(32) NOT NULL,
+  `CODE_PK` int(10) NOT NULL,
+  `TITLE` varchar(32) NOT NULL,
   `POST_URL` text NOT NULL,
   `UPLOAD_USER` varchar(32) NOT NULL,
   `SELL_COUNT` int(24) NOT NULL,
-  `TAG_LISTS` text DEFAULT NULL,
+  `TAG_LISTS` text NOT NULL DEFAULT '[]',
   `UPLOAD_TIME` datetime NOT NULL,
   `UPDATE_TIME` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
+--
 -- 덤프된 테이블의 인덱스
+--
 
 --
 -- 테이블의 인덱스 `ARCA_CONTENT_TB`
@@ -59,7 +73,7 @@ ALTER TABLE `CONTENT_TAGS_TB`
 -- 테이블의 인덱스 `CONTENT_TITLE_TB`
 --
 ALTER TABLE `CONTENT_TITLE_TB`
-  ADD PRIMARY KEY (`TITLE_PK`);
+  ADD PRIMARY KEY (`CODE_PK`);
 
 --
 -- 덤프된 테이블의 AUTO_INCREMENT
@@ -69,5 +83,9 @@ ALTER TABLE `CONTENT_TITLE_TB`
 -- 테이블의 AUTO_INCREMENT `CONTENT_TAGS_TB`
 --
 ALTER TABLE `CONTENT_TAGS_TB`
-  MODIFY `TAG_CODE_PK` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `TAG_CODE_PK` int(255) NOT NULL AUTO_INCREMENT;
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

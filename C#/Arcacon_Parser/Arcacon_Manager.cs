@@ -91,66 +91,89 @@ namespace Arcacon_Parser {
         }
 
         /// <summary> post id 의 아카콘 정보를 반환합니다. </summary>
-        public Dictionary<string, dynamic> _get_post_data(int post_code) {
+        public Dictionary<string, dynamic> _get_post_data ( int post_code ) {
             // 테스트용 접속
-            this._get_main_site();
+            this._get_main_site( );
 
-            Thread.Sleep(2000);
-            string url = this._url + post_code.ToString();
-            var _data = this._get_web_data(url);
+            Thread.Sleep( 2000 );
+            string url = this._url + post_code.ToString( );
+            var _data = this._get_web_data( url );
             var node = _data.DocumentNode;
-            var head_nodes = _data.DocumentNode.SelectSingleNode("//div" +this.get_class_by_id("article-head"));
-            var body_nodes = _data.DocumentNode.SelectSingleNode("//div" +this.get_class_by_id("emoticons-wrapper"));
+            var head_nodes = _data.DocumentNode.SelectSingleNode( "//div" + this.get_class_by_id( "article-head" ) );
+            var body_nodes = _data.DocumentNode.SelectSingleNode( "//div" + this.get_class_by_id( "emoticons-wrapper" ) );
 
 
             //content parsing 
-            var articles = head_nodes.SelectSingleNode("./div" + get_class_by_id("info-row clearfix"));
-            var tags     = body_nodes.SelectSingleNode("./div" + get_class_by_id("emoticon-tags"));
+            var articles = head_nodes.SelectSingleNode( "./div" + get_class_by_id( "info-row clearfix" ) );
+            var tags = body_nodes.SelectSingleNode( "./div" + get_class_by_id( "emoticon-tags" ) );
 
-            string title_stirng = head_nodes.SelectSingleNode("./div" + get_class_by_id("title-row") +"/div" +get_class_by_id("title")).InnerText ;
-            string uploader     = articles.SelectSingleNode("./div" +get_class_by_id("member-info")).InnerText;
-            int selling_count   = int.Parse(articles.SelectSingleNode("./div" + get_class_by_id("article-info")).SelectSingleNode("./span" + get_class_by_id("body")).InnerText);
-            string update_date  = articles.SelectSingleNode("./div" + get_class_by_id("article-info")).SelectSingleNode(".//time").InnerText;
-            List<string> _tags  = new();
 
-            foreach(HtmlNode _node in tags.ChildNodes) {
-                if (_node.Name != "a") { continue; }
-                _tags.Add(_node.InnerText);
+            // 타이틀, 업로더, 판매수, 등록일, 태그들
+            string title_stirng = head_nodes.SelectSingleNode( "./div" + get_class_by_id( "title-row" ) + "/div" + get_class_by_id( "title" ) ).InnerText;
+            string uploader = articles.SelectSingleNode( "./div" + get_class_by_id( "member-info" ) ).InnerText;
+            int selling_count = int.Parse( articles.SelectSingleNode( "./div" + get_class_by_id( "article-info" ) ).SelectSingleNode( "./span" + get_class_by_id( "body" ) ).InnerText );
+            string update_date = articles.SelectSingleNode( "./div" + get_class_by_id( "article-info" ) ).SelectSingleNode( ".//time" ).InnerText;
+            List<string> _tags = new( );
+
+            // 태그 긁어오기
+            if ( tags != null ) {
+                foreach ( HtmlNode _node in tags.ChildNodes ) {
+                    if ( _node.Name != "a" ) {
+                        continue;
+                    }
+                    _tags.Add( _node.InnerText );
+                }
             }
 
-            Dictionary<string, dynamic> _retunner_type = new();
+
+            Dictionary<string, dynamic> _retunner_type = new( );
             var _content_info = new Arca_Content_Jar(
                 post_code,
                 title_stirng,
-                this._url +post_code.ToString(),
+                this._url + post_code.ToString( ),
                 uploader,
                 selling_count,
                 _tags,
-                DateTime.Parse(update_date)
+                DateTime.Parse( update_date )
             );
-            _retunner_type.Add("INFO", _content_info);
+            _retunner_type.Add( "INFO", _content_info );
 
-            List<Arca_Content> _contents = new();
-            var _emote_lists = body_nodes.ChildNodes;
-            foreach(HtmlNode _node in _emote_lists) {
-                if (_node.ParentNode != body_nodes) { continue; }   // 친부모 아니면 제거
-                if (_node == _emote_lists.Last()) { continue; }     // 태그 제거
+            List<Arca_Content> _contents = _get_content_in_wrapper(_data, post_code);
+            _retunner_type.Add( "CONTENTS", _contents );
+            return _retunner_type;
+        }
 
-
-                bool isVideo = false;
-                if (_node.Attributes["data-src"].Value.Split('.').Last() == "mp4") {
-                    isVideo = true;
-                }
-                var _content_obj = new Arca_Content(
-                    post_code, url, int.Parse(_node.Attributes["data-id"].Value),
-                    "https:" +_node.Attributes["data-src"], isVideo
-                ) ;
-
-                _contents.Add(_content_obj);
+        /// <summary> 아카콘만 가져옴 </summary>
+        private List<Arca_Content> _get_content_in_wrapper ( HtmlDocument _post_docs, int post_id ) {
+            if ( _post_docs == null ) { return null; }
+            HtmlNode _node = _post_docs.DocumentNode;
+            var _wrapper_node = _node.SelectSingleNode( "//div" +get_class_by_id("emoticons-wrapper"));
+            if ( _wrapper_node == null ) { return null; }
+            List<HtmlNode> _content_nodes = new (){ };
+            // content 분류
+            foreach(HtmlNode node in _wrapper_node.ChildNodes ) {
+                if (node.ParentNode != _wrapper_node){continue;}
+                if (!new List<string>(){ "video", "img"}.Contains(node.Name) ){continue;}
+                _content_nodes.Add(node);
             }
 
-            _retunner_type.Add("CONTENTS", _contents);
-            return _retunner_type;
+            List<Arca_Content> _contents = new(){ };
+            foreach(HtmlNode node in _content_nodes ) {
+                int content_post_id = post_id;
+                string content_post_url = $"{_url}{post_id.ToString()}";
+                int content_id = int.Parse( node.Attributes["data-id"].Value );
+                bool is_video = node.Name == "video"?true:false;
+                string content_url = string.Empty;
+
+                if (node.Attributes["data-src"] != null){
+                    content_url = "https:" + node.Attributes["data-src"].Value;
+                }
+                else{content_url = "https:" +node.Attributes["src"].Value;}
+                content_url = content_url.Replace("amp;", "");
+                _contents.Add( new Arca_Content( content_post_id, content_post_url, content_id, content_url, is_video ));
+            }
+
+            return _contents;
         }
 
         /// <summary> 단순 이미지 다운로드 </summary>

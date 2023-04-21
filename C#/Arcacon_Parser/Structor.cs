@@ -52,7 +52,7 @@ namespace Arcacon_Parser
     // FOR DB 
     public class Arca_Content {
 
-        public int content_title { get; }
+        public int content_post_id { get; }
         public string content_post_url { get; }
         public int content_id { get; }
         public string content_url { get; }
@@ -61,7 +61,7 @@ namespace Arcacon_Parser
         public Arca_Content(
             int content_post_id, string content_post_url, int content_id, string content_url, bool isVideo
             ) {
-            this.content_title = content_post_id;
+            this.content_post_id = content_post_id;
             this.content_post_url = content_post_url;
             this.content_id = content_id;
             this.content_url = content_url;
@@ -71,7 +71,7 @@ namespace Arcacon_Parser
         public override string ToString()
         {
             var d = new Dictionary<string, dynamic> ( );
-            d.Add ( "CONTENT_TITLE", content_title );
+            d.Add ( "CONTENT_TITLE", content_post_id );
             d.Add ( "CONTENT_POST_URL", content_post_url );
             d.Add ( "CONTENT_ID", content_id );
             d.Add ( "CONTENT_URL", content_url );

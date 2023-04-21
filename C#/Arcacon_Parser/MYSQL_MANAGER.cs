@@ -69,7 +69,7 @@ namespace Arcacon_Parser {
 
             this._conn.Open ( );
             var _cmd = new MySqlCommand ( SQL, _conn );
-            _cmd.Parameters.AddWithValue ( "@TITLE_CODE", _content.content_title );
+            _cmd.Parameters.AddWithValue ( "@TITLE_CODE", _content.content_post_id );
             _cmd.Parameters.AddWithValue ( "@CONTENT_ID_PK", _content.content_id );
             _cmd.Parameters.AddWithValue ( "@CONTENT_URL", _content.content_url );
             _cmd.Parameters.AddWithValue ( "@IS_VIDEO", _content.isVideo );

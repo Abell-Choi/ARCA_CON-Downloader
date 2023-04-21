@@ -4,6 +4,7 @@ using System.IO.Compression;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace Arcacon_Parser {
     public class Arcacon_Manager {
@@ -176,15 +177,59 @@ namespace Arcacon_Parser {
             return _contents;
         }
 
-        /// <summary> 단순 이미지 다운로드 </summary>
-        public bool _download_file(string url, string dir_name, string file_name) {
-            string path = "./" + dir_name;
-            DirectoryInfo _dir = new DirectoryInfo(path);
-            _reset_directory(path);
+        private void _init_download_path ( ) {
+            if (!Directory.Exists($"./download")){Directory.CreateDirectory($"./download");}
+        }
 
+        private void _init_title_path(int title_code , bool reset_data = false) {
+            _init_download_path();
+            if ( !Directory.Exists( $"./download/{title_code.ToString( )}" ) ) {
+                Directory.CreateDirectory( $"./download/{title_code.ToString( )}" );
+                return;
+            }
+            if ( reset_data ) {
+                _reset_directory($"./download/{title_code.ToString()}");
+            }
+            return;
+        }
+
+        public bool _download_file(Arca_Content _content ) {
+            _init_title_path(_content.content_post_id);
+            string path = new DirectoryInfo($"./download/{_content.content_post_id.ToString()}").FullName;
+
+            string file_name = _content.isVideo ? $"{path}/{_content.content_id.ToString( )}.mp4" :
+                $"{path}/{_content.content_id.ToString( )}.png";
+
+            string download_url = _content.content_url;
             WebClient _wc = new WebClient();
-            try { _wc.DownloadFile(url, "./" +dir_name +"/" +file_name+url.Split('.').Last()); }
-            catch(Exception e) { return false; }
+            try{_wc.DownloadFile($"{download_url}", $"{file_name}");}
+            catch(Exception e){Console.WriteLine(e.ToString()); return false;}
+
+            if ( file_name.Contains( ".mp4" ) ) {
+                _convert_video($"{file_name}");
+            }
+
+            return true;
+        }
+
+        public bool _convert_video(string file_path) {
+            string input_path = new FileInfo(file_path).FullName;
+
+            string ffmpeg_args = $"-i {input_path} {input_path.Replace("mp4", "gif")}";
+            var ffmpeg_process = new Process{
+                StartInfo = new ProcessStartInfo{
+                    FileName = "ffmpeg",
+                    Arguments = ffmpeg_args,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            ffmpeg_process.Start();
+            ffmpeg_process.WaitForExit();
+
+            new FileInfo(file_path).Delete();
             return true;
         }
 

@@ -8,10 +8,14 @@ string json_file = File.ReadAllText( home_path + "/test.json" );
 
 var _ARCA = new Arcacon_Manager( );
 //_ARCA._test ( );
-var dt = _ARCA._get_post_data( 31162 );
-Console.WriteLine( dt["INFO"].ToString( ) );
-foreach ( var i in dt["CONTENTS"] ) {
-    Console.WriteLine( i.ToString( ) );
+foreach(int i in new List<int>(){ 31607, 31608, 31407 } ) {
+    Thread.Sleep(5000);
+    var dt = _ARCA._get_post_data( i );
+    Console.WriteLine( dt["INFO"].ToString( ) );
+    foreach ( Arca_Content j in dt["CONTENTS"] ) {
+        Console.WriteLine( i.ToString( ) );
+        _ARCA._download_file( j );
+    }
 }
 
 //JObject j = JObject.Parse ( json_file );

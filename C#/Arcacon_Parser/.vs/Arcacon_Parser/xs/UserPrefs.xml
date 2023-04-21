@@ -1,3 +1,27 @@
 ﻿<Properties StartupConfiguration="{4199667A-721D-4717-8723-08379D436F07}|Default">
   <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.ItemProperties.Arcacon__Parser PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Arcacon_Manager.cs">
+    <Files>
+      <File FileName="Arcacon_Manager.cs" Line="186" Column="24" />
+      <File FileName="MYSQL_MANAGER.cs" Line="17" Column="17" />
+      <File FileName="Nextcloud_Manager.cs" Line="1" Column="1" />
+      <File FileName="Program.cs" Line="16" Column="1" />
+      <File FileName="Structor.cs" Line="55" Column="35" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Arcacon_Parser" expanded="True">
+            <Node name="Arcacon_Parser" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
 </Properties>

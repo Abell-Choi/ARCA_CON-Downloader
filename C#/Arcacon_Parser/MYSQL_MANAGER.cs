@@ -132,7 +132,8 @@ namespace Arcacon_Parser {
         public int add_content_tag_tb( string TAG_NAME ) {
             if (this.get_tag_code(TAG_NAME) != -1 ) { return -1; }
             string SQL = "INSERT INTO `CONTENT_TAGS_TB`(`TAG_CODE_PK`, `TAG_NAME`) " +
-                "VALUES (NULL, @TAG_NAME)";
+                "VALUES (NULL, @TAG_NAME) ON DUPLICATE KEY UPDATE " +
+                "`TAG_NAME` = @TAG_NAME";
 
             _conn.Open ( );
             var _cmd = new MySqlCommand ( SQL, _conn );

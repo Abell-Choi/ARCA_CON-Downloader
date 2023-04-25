@@ -10,6 +10,8 @@ namespace Arcacon_Parser {
         string user_passwd = string.Empty;
 
         public Nextcloud_Manager ( string cloud_url, string share_path, string user_name, string user_passwd ) {
+            if (!cloud_url.EndsWith("/")){cloud_url +='/';}
+            if (!share_path.EndsWith("/")) {share_path += "/";}
             this.cloud_url = cloud_url;
             this.share_path = share_path;
             this.user_name = user_name;
@@ -29,7 +31,7 @@ namespace Arcacon_Parser {
             try {
                 HttpWebRequest folderRequest = ( HttpWebRequest ) WebRequest.Create( cloud_url + share_path + dir_name );
                 folderRequest.Method = "MKCOL";
-                folderRequest.Headers["Authorization"] = "Basic " + Convert.ToBase64String( System.Text.Encoding.GetEncoding( "ISO-8859-1" ).GetBytes( username + ":" + user_passwd ) );
+                folderRequest.Headers["Authorization"] = "Basic " + Convert.ToBase64String( System.Text.Encoding.GetEncoding( "ISO-8859-1" ).GetBytes( user_name + ":" + user_passwd ) );
                 folderRequest.Headers["Prefer"] = "return=minimal";
                 folderRequest.ContentLength = 0;
 
@@ -39,7 +41,8 @@ namespace Arcacon_Parser {
                     }
                 }
             } catch ( Exception ex ) {
-                Console.WriteLine( "EX >> " + ex.Message );
+                if (ex.ToString().Contains("(405)")) { }
+                else{ Console.WriteLine(ex.ToString());}
             }
 
             return result;
@@ -49,10 +52,16 @@ namespace Arcacon_Parser {
         public bool _upload_file ( string dir_name, string file_name, string local_file_path ) {
             bool result = false;
 
+            if ( !dir_name.StartsWith( "/" ) ) {
+                dir_name = "/" + dir_name;
+            }
+            if ( !dir_name.EndsWith( "/" ) ) {
+                dir_name += "/";
+            }
             create_directory(dir_name);
-
             if (!dir_name.StartsWith("/")){dir_name = "/" +dir_name;}
             if (!dir_name.EndsWith("/")){dir_name += "/";}
+
             string f_url = this.cloud_url +this.share_path +file_name;
             string file_content_type = "";
             if ( file_name.EndsWith( ".mp4" ) ) {
@@ -65,7 +74,7 @@ namespace Arcacon_Parser {
                 Console.WriteLine(fileUrl);
                 HttpWebRequest fileRequest = ( HttpWebRequest ) WebRequest.Create( fileUrl );
                 fileRequest.Method = "PUT";
-                fileRequest.Headers["Authorization"] = "Basic " + Convert.ToBase64String( System.Text.Encoding.GetEncoding( "ISO-8859-1" ).GetBytes( username + ":" + user_passwd ) );
+                fileRequest.Headers["Authorization"] = "Basic " + Convert.ToBase64String( System.Text.Encoding.GetEncoding( "ISO-8859-1" ).GetBytes( user_name + ":" + user_passwd ) );
                 fileRequest.Headers["Prefer"] = "return=minimal";
                 fileRequest.ContentType = file_content_type;
 

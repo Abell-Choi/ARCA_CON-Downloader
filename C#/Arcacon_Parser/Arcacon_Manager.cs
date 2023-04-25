@@ -212,7 +212,7 @@ namespace Arcacon_Parser {
             return true;
         }
 
-        public bool _convert_video(string file_path) {
+        public bool _convert_video(string file_path, bool delete_origin_file=false) {
             string input_path = new FileInfo(file_path).FullName;
 
             string ffmpeg_args = $"-i {input_path} {input_path.Replace("mp4", "gif")}";
@@ -229,7 +229,7 @@ namespace Arcacon_Parser {
             ffmpeg_process.Start();
             ffmpeg_process.WaitForExit();
 
-            new FileInfo(file_path).Delete();
+            if ( delete_origin_file ) { new FileInfo(file_path).Delete(); }
             return true;
         }
 

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Arcacon_Parser;
-
+using System.Threading;
 
 string user_name = Environment.GetEnvironmentVariable( "USER" );
 string home_path = Path.Combine( "/Users", user_name );
@@ -12,30 +12,63 @@ JObject jobject = JObject.Parse( json_file );
 
 var _ARCA = new Arcacon_Manager( );
 
-int url_post_num = 31415;
+Console.Write("INPUT DOWNLOAD POST URL >>>>> ");
+string _read = Console.ReadLine();
+if (_read.Contains("?")){_read = _read.Split("?")[0];}
+
+int url_post_num = int.Parse(_read.Split("/").Last());
 var _post_data = _ARCA._get_post_data(url_post_num);
 Arca_Content_Jar _title = _post_data["INFO"];
 List<Arca_Content> _contents = _post_data["CONTENTS"];
 
-/// download & upload file
-foreach(Arca_Content _content in _contents ) {
-    _ARCA._download_file( _content );
+///// download & upload file
+//foreach(Arca_Content _content in _contents ) {
+//    _ARCA._download_file( _content );
+//}
+
+
+Nextcloud_Manager _get_connection ( ) {
+    var NEXT_CLOUD_MANAGER = new Nextcloud_Manager(
+        jobject.Value<string>( "CLOUD_HOST" ),
+        jobject.Value<string>( "SHARE_PATH" ),
+        jobject.Value<string>( "ID" ),
+        jobject.Value<string>( "PW" )
+    );
+
+    return NEXT_CLOUD_MANAGER;
+
 }
 
-var NEXT_CLOUD_MANAGER = new Nextcloud_Manager(
-    jobject.Value<string>( "CLOUD_HOST" ),
-    jobject.Value<string>( "SHARE_PATH" ),
-    jobject.Value<string>( "ID" ),
-    jobject.Value<string>( "PW" )
-);
-
+List<Thread> _t_list = new ();
 foreach ( var i in new DirectoryInfo( "./download" ).GetDirectories( ) ) {
     string name = i.Name;
-    NEXT_CLOUD_MANAGER.create_directory( name );
+    _get_connection().create_directory( name );
+    int stack = 0;
     foreach ( var j in i.GetFiles( ) ) {
-        Console.WriteLine(i.FullName);
-        NEXT_CLOUD_MANAGER._upload_file( name, j.Name, j.FullName );
+        while ( _t_list.Count >= 10 ) {
+            List<Thread> _t_refreshed = new();
+            foreach(var _ind_th in _t_list ) {
+                if (_ind_th.IsAlive){_t_refreshed.Add(_ind_th);}
+            }
+
+            _t_list = _t_refreshed;
+        }
+        Thread _t = new Thread(new ThreadStart(delegate(){
+            _get_connection( )._upload_file( name, j.Name, j.FullName );
+        } ));
+        _t_list.Add(_t);
+        _t.Start();
     }
+}
+
+while (_t_list.Count != 0 ) {
+    List<Thread> _t_refreshed = new( );
+    foreach ( var _ind_th in _t_list ) {
+        if ( _ind_th.IsAlive ) {
+            _t_refreshed.Add( _ind_th );
+        }
+    }
+    _t_list = _t_refreshed;
 }
 
 // update db

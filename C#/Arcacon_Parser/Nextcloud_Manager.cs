@@ -49,7 +49,7 @@ namespace Arcacon_Parser {
         }
 
 
-        public bool _upload_file ( string dir_name, string file_name, string local_file_path ) {
+        public async Task<bool> _upload_file ( string dir_name, string file_name, string local_file_path ) {
             bool result = false;
 
             if ( !dir_name.StartsWith( "/" ) ) {
